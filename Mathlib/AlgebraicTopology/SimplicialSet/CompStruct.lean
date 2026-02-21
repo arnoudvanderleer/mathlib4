@@ -132,6 +132,7 @@ lemma exists_of_simplex (s : X _⦋1⦌) :
 
 /-- Transports an edge between `x₀` and `x₁` along equalities `xᵢ = yᵢ`.
   I.e. constructs an edge between the `yᵢ` from an edge between the `xᵢ`. -/
+@[simps]
 def ofEq {y₀ y₁ : X _⦋0⦌}
     (e : Edge x₀ x₁)
     (h₀ : x₀ = y₀)
@@ -238,6 +239,7 @@ lemma map_simplex (h : CompStruct e₀₁ e₁₂ e₀₂) (f : X ⟶ Y) :
 /-- Transports a CompStruct between edges `e₀₁`, `e₁₂` and `e₀₂` along equalities on
   1-simplices `eᵢⱼ.edge = fᵢⱼ.edge`.
   I.e. constructs a `CompStruct` between the `fᵢⱼ` from a `CompStruct` between the `eᵢⱼ`. -/
+@[simps]
 def ofEq {y₀ y₁ y₂ : X _⦋0⦌}
     {e₀₁ : Edge x₀ x₁} {f₀₁ : Edge y₀ y₁}
     {e₁₂ : Edge x₁ x₂} {f₁₂ : Edge y₁ y₂}
@@ -255,8 +257,9 @@ def ofEq {y₀ y₁ y₂ : X _⦋0⦌}
 end CompStruct
 
 /-- For `hom` an edge, `InvStruct hom` encodes that there is a backward edge `inv`, and
-  there are 2-simplices witnessing that `hom` and `inv` compose to the identity on their endpoints.
-  This means that `hom` becomes an isomorphism in the homotopy category. -/
+there are 2-simplices witnessing that `hom` and `inv` compose to the identity on their endpoints.
+This means that `hom` becomes an isomorphism in the homotopy category. -/
+@[ext]
 structure InvStruct (hom : Edge x₀ x₁) where
   /-- The backwards edge -/
   inv : Edge x₁ x₀
@@ -280,24 +283,27 @@ lemma id_comp_id_aux {l m n : ℕ}
 /-- The identity edge on a point, composed with itself, gives the identity. -/
 def idCompId (x : X _⦋0⦌) : CompStruct (id x) (id x) (id x) :=
   .mk
-    (X.map (Opposite.op (SimplexCategory.Hom.mk ⟨fun _ ↦ 0, monotone_const⟩)) x)
+    (X.map (SimplexCategory.const ⦋2⦌ ⦋0⦌ 0).op x)
     (by apply id_comp_id_aux; decide)
     (by apply id_comp_id_aux; decide)
     (by apply id_comp_id_aux; decide)
 
 /-- The identity edge has an inverse. -/
+@[simps]
 def invStructId (x : X _⦋0⦌) : InvStruct (id x) where
   inv := id x
   homInvId := idCompId x
   invHomId := idCompId x
 
 /-- The inverse has an inverse. -/
+@[simps]
 def invStructInv {hom : Edge x₀ x₁} (I : InvStruct hom) : InvStruct I.inv where
   inv := hom
   homInvId := I.invHomId
   invHomId := I.homInvId
 
 /-- Maps an inverse along an SSet morphism. -/
+@[simps]
 def map {hom : Edge x₀ x₁} (I : InvStruct hom) (f : X ⟶ Y) : InvStruct (hom.map f) where
   inv := I.inv.map f
   homInvId := (I.homInvId.map f).ofEq rfl rfl (Edge.ext_iff.mp (map_id _ _))
@@ -305,6 +311,7 @@ def map {hom : Edge x₀ x₁} (I : InvStruct hom) (f : X ⟶ Y) : InvStruct (ho
 
 /-- Transports an inverse for `hom` along an equality of 1-simplices `hom = hom'`.
   I.e. constructs an inverse for `hom'` from an inverse for `hom`. -/
+@[simps]
 def ofEq {y₀ y₁ : X _⦋0⦌} {hom : Edge x₀ x₁} {hom' : Edge y₀ y₁}
     (I : InvStruct hom)
     (hhom : hom.edge = hom'.edge) :
